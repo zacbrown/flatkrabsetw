@@ -75,6 +75,16 @@ extern "C" {
         krabs_status_ctx *status,
         krabs_user_trace *trace);
 
+    FLATKRABSETW_API void krabs_stop_trace(
+        krabs_status_ctx *status,
+        krabs_user_trace *trace);
+
+    FLATKRABSETW_API void krabs_destroy_user_provider(krabs_user_provider *provider);
+
+    FLATKRABSETW_API void krabs_destroy_user_trace(krabs_user_trace *trace);
+
+    FLATKRABSETW_API void krabs_destroy_krabs_filter(krabs_filter *filter);
+
 #ifdef __cplusplus
 }
 #endif
