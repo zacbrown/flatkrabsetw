@@ -3,4 +3,4 @@ flatkrabsetw is a flat-C wrapper around the [krabsetw](https://github.com/Micros
 It's primarily meant for FFI bindings for other languages to interface with.
 
 # Current State
-Nowhere near complete. Check back around March 2017.
+Nowhere near complete. Check back around end of 2017.
