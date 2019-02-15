@@ -21,8 +21,7 @@ typedef void(*krabs_callback)(const EVENT_RECORD &);
 extern "C" {
 #endif
 
-    typedef enum
-    {
+    typedef enum {
         krabs_success = 0,
         krabs_error_unknown_error = 1,
         krabs_error_invalid_parameter = 2,
@@ -34,56 +33,73 @@ extern "C" {
         krabs_error_trace_already_registered = 8,
     } krabs_status_t;
 
-    typedef struct
-    {
+    typedef struct {
         krabs_status_t status;
         char msg[256];
     } krabs_status_ctx;
 
     DECLARE_HANDLE(krabs_filter);
-
     DECLARE_HANDLE(krabs_user_trace);
     DECLARE_HANDLE(krabs_user_provider);
 
     // Exported Functions
-    FLATKRABSETW_API krabs_user_trace *krabs_create_user_trace(
+    FLATKRABSETW_API krabs_user_trace* krabs_create_user_trace(
         krabs_status_ctx *status,
-        const wchar_t *name);
+        const wchar_t *name
+    );
 
-    FLATKRABSETW_API krabs_user_provider *krabs_create_user_provider(
+    FLATKRABSETW_API krabs_user_provider* krabs_create_user_provider(
         krabs_status_ctx *status,
-        krabs_user_trace *trace,
         const wchar_t *provider_name,
         ULONGLONG any_flags,
-        ULONGLONG all_flags);
+        ULONGLONG all_flags
+    );
 
     FLATKRABSETW_API void krabs_enable_user_provider(
         krabs_status_ctx *status,
         krabs_user_trace *trace,
-        krabs_user_provider *provider);
-
-    FLATKRABSETW_API krabs_filter *krabs_create_filter(
-        krabs_status_ctx *status
+        krabs_user_provider *provider
     );
 
-    FLATKRABSETW_API void krabs_add_event_callback_to_provider(
+    FLATKRABSETW_API krabs_filter* krabs_create_filter_for_event_ids(
         krabs_status_ctx *status,
-        krabs_user_provider* provider,
-        krabs_callback callback);
+        const USHORT *event_ids,
+        size_t event_ids_count
+    );
+
+    FLATKRABSETW_API void krabs_add_event_callback_to_user_provider(
+        krabs_status_ctx *status,
+        krabs_user_provider *provider,
+        krabs_callback callback
+    );
+
+    FLATKRABSETW_API void krabs_add_callback_to_event_filter(
+        krabs_status_ctx *status,
+        krabs_filter *filter,
+        krabs_callback callback
+    );
+
+    FLATKRABSETW_API void krabs_add_event_filter_to_user_provider(
+        krabs_status_ctx *status,
+        krabs_user_provider *provider,
+        krabs_filter *filter
+    );
 
     FLATKRABSETW_API void krabs_start_trace(
         krabs_status_ctx *status,
-        krabs_user_trace *trace);
+        krabs_user_trace *trace
+    );
 
     FLATKRABSETW_API void krabs_stop_trace(
         krabs_status_ctx *status,
-        krabs_user_trace *trace);
+        krabs_user_trace *trace
+    );
 
     FLATKRABSETW_API void krabs_destroy_user_provider(krabs_user_provider *provider);
 
     FLATKRABSETW_API void krabs_destroy_user_trace(krabs_user_trace *trace);
 
-    FLATKRABSETW_API void krabs_destroy_krabs_filter(krabs_filter *filter);
+    FLATKRABSETW_API void krabs_destroy_event_filter(krabs_filter *filter);
 
 #ifdef __cplusplus
 }
