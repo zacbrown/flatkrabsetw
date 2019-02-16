@@ -5,6 +5,12 @@
 #include "flatkrabsetw.h"
 #include <krabs.hpp>
 
+void throw_if_bad_alloc(void* ptr) {
+    if (ptr == nullptr) {
+        throw std::bad_alloc();
+    }
+}
+
 // Exported Functions
 FLATKRABSETW_API krabs_property_name* krabs_create_property_name(
     krabs_status_ctx *status,
@@ -15,6 +21,7 @@ FLATKRABSETW_API krabs_property_name* krabs_create_property_name(
 
     try {
         name = new std::wstring(property_name);
+        throw_if_bad_alloc(name);
     }
     catch (const std::exception& ex) {
         strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
@@ -23,7 +30,6 @@ FLATKRABSETW_API krabs_property_name* krabs_create_property_name(
 
     return (krabs_property_name*)name;
 }
-
 
 FLATKRABSETW_API krabs_user_trace* krabs_create_user_trace(
     krabs_status_ctx *status,
@@ -34,6 +40,7 @@ FLATKRABSETW_API krabs_user_trace* krabs_create_user_trace(
 
     try {
         trace = new krabs::user_trace(name);
+        throw_if_bad_alloc(trace);
     }
     catch (const std::exception& ex) {
         strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
@@ -54,6 +61,7 @@ FLATKRABSETW_API krabs_user_provider* krabs_create_user_provider(
 
     try {
         provider = new krabs::provider<>(provider_name);
+        throw_if_bad_alloc(provider);
         provider->any(any_flags);
         provider->all(all_flags);
     }
@@ -110,6 +118,7 @@ FLATKRABSETW_API krabs_filter* krabs_create_filter_for_event_ids(
         };
 
         filter = new krabs::event_filter(predicate);
+        throw_if_bad_alloc(filter);
     }
     catch (const std::exception& ex) {
         strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
@@ -215,6 +224,7 @@ FLATKRABSETW_API krabs_event_schema* krabs_get_event_schema(
 
     try {
         schema = new krabs::schema(rec);
+        throw_if_bad_alloc(schema);
     }
     catch (const std::exception& ex) {
         strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
@@ -235,6 +245,7 @@ FLATKRABSETW_API krabs_event_parser* krabs_get_event_parser(
     try {
         krabs::schema *unwrapped_schema = (krabs::schema*)schema;
         parser = new krabs::parser(*unwrapped_schema);
+        throw_if_bad_alloc(parser);
     }
     catch (const std::exception& ex) {
         strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
@@ -288,6 +299,7 @@ FLATKRABSETW_API wchar_t* krabs_get_string_property_from_parser(
             std::wstring wide = skinny_to_wide(skinny);
             size_t alloc_size = wide.length() + 1;
             ret = new wchar_t[alloc_size];
+            throw_if_bad_alloc(ret);
             wcscpy_s(ret, alloc_size, wide.c_str());
             break;
         }
@@ -296,6 +308,7 @@ FLATKRABSETW_API wchar_t* krabs_get_string_property_from_parser(
             std::wstring wide = unwrapped_parser->parse<std::wstring>(*unwrapped_property_name);
             size_t alloc_size = wide.length() + 1;
             ret = new wchar_t[alloc_size];
+            throw_if_bad_alloc(ret);
             wcscpy_s(ret, alloc_size, wide.c_str());
             break;
         }
@@ -304,6 +317,7 @@ FLATKRABSETW_API wchar_t* krabs_get_string_property_from_parser(
             auto parsed = unwrapped_parser->parse<const krabs::counted_string*>(*unwrapped_property_name);
             auto alloc_size = parsed->length() + 1;
             ret = new wchar_t[alloc_size];
+            throw_if_bad_alloc(ret);
             wcsncpy_s(ret, alloc_size, parsed->string(), alloc_size - 1);
             break;
         }
