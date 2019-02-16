@@ -4,9 +4,49 @@
 
 void handle_event(const EVENT_RECORD &rec)
 {
-    printf("event processed - eid: %d, pid: %d",
+    printf("event processed - eid: %d, pid: %d, context:\n",
         rec.EventHeader.EventDescriptor.Id,
         rec.EventHeader.ProcessId);
+
+    krabs_status_ctx status;
+    auto prop_name = krabs_create_property_name(&status, L"ContextInfo");
+
+    if (status.status != krabs_success) {
+        printf("error: %s\n", status.msg);
+        return;
+    }
+
+    auto schema = krabs_get_event_schema(&status, rec);
+    if (status.status != krabs_success) {
+        printf("error: %s\n", status.msg);
+        return;
+    }
+
+    auto parser = krabs_get_event_parser(&status, schema);
+    if (status.status != krabs_success) {
+        printf("error: %s\n", status.msg);
+        return;
+    }
+
+    auto context = krabs_get_string_property_from_parser(
+        &status,
+        parser,
+        prop_name,
+        krabs_string_type::std_wstring);
+    if (status.status != krabs_success) {
+        printf("error: %s\n", status.msg);
+        return;
+    }
+
+    wprintf(L"%ls\n", context);
+
+    if (context) {
+        delete context;
+    }
+    krabs_destroy_event_parser(parser);
+    krabs_destroy_event_schema(schema);
+    krabs_destroy_property_name(prop_name);
+
     printf("\n");
 }
 
