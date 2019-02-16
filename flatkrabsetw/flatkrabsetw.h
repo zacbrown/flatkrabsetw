@@ -15,7 +15,7 @@
 #define FLATKRABSETW_API __declspec(dllimport)
 #endif
 
-typedef void(*krabs_callback)(const EVENT_RECORD &);
+typedef void(*krabs_callback)(const EVENT_RECORD *);
 
 #ifdef __cplusplus
 extern "C" {
@@ -111,7 +111,7 @@ extern "C" {
 
     FLATKRABSETW_API krabs_event_schema* krabs_get_event_schema(
         krabs_status_ctx *status,
-        const EVENT_RECORD& rec
+        const EVENT_RECORD *rec
     );
 
     FLATKRABSETW_API krabs_event_parser* krabs_get_event_parser(

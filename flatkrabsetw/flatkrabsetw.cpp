@@ -137,7 +137,10 @@ FLATKRABSETW_API void krabs_add_event_callback_to_user_provider(
 
     try {
         krabs::provider<> *unwrapped_provider = (krabs::provider<>*)provider;
-        unwrapped_provider->add_on_event_callback(callback);
+        auto wrapper_callback = [callback](const EVENT_RECORD &rec) {
+            callback(&rec);
+        };
+        unwrapped_provider->add_on_event_callback(wrapper_callback);
     }
     catch (const std::exception& ex)
     {
@@ -155,7 +158,9 @@ FLATKRABSETW_API void krabs_add_callback_to_event_filter(
 
     try {
         krabs::event_filter *unwrapped_filter = (krabs::event_filter*)filter;
-        unwrapped_filter->add_on_event_callback(callback);
+        unwrapped_filter->add_on_event_callback([callback](const EVENT_RECORD &rec) {
+            callback(&rec);
+        });
     }
     catch (const std::exception& ex) {
         strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
@@ -216,14 +221,14 @@ FLATKRABSETW_API void krabs_stop_trace(
 
 FLATKRABSETW_API krabs_event_schema* krabs_get_event_schema(
     krabs_status_ctx *status,
-    const EVENT_RECORD& rec)
+    const EVENT_RECORD *rec)
 {
     ZeroMemory(status, sizeof krabs_status_ctx);
 
     krabs::schema *schema = nullptr;
 
     try {
-        schema = new krabs::schema(rec);
+        schema = new krabs::schema(*rec);
         throw_if_bad_alloc(schema);
     }
     catch (const std::exception& ex) {

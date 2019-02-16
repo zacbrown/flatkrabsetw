@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <flatkrabsetw.h>
 
-void handle_event(const EVENT_RECORD &rec)
+void handle_event(const EVENT_RECORD *rec)
 {
     printf("event processed - eid: %d, pid: %d, context:\n",
-        rec.EventHeader.EventDescriptor.Id,
-        rec.EventHeader.ProcessId);
+        rec->EventHeader.EventDescriptor.Id,
+        rec->EventHeader.ProcessId);
 
     krabs_status_ctx status;
     auto prop_name = krabs_create_property_name(&status, L"ContextInfo");
