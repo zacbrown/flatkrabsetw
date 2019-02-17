@@ -40,6 +40,14 @@ extern "C" {
     } krabs_string_type;
 
     typedef struct {
+        union {
+            DWORD v4;
+            BYTE v6[16];
+        };
+        bool is_ipv6;
+    } krabs_ip_address;
+
+    typedef struct {
         krabs_status_t status;
         char msg[256];
     } krabs_status_ctx;
@@ -124,6 +132,24 @@ extern "C" {
         krabs_event_parser *const parser,
         krabs_property_name *const property_name,
         krabs_string_type string_type
+    );
+
+    FLATKRABSETW_API uint32_t krabs_get_u32_property_from_parser(
+        krabs_status_ctx *status,
+        krabs_event_parser *const parser,
+        krabs_property_name *const property_name
+    );
+
+    FLATKRABSETW_API uint16_t krabs_get_u16_property_from_parser(
+        krabs_status_ctx *status,
+        krabs_event_parser *const parser,
+        krabs_property_name *const property_name
+    );
+
+    FLATKRABSETW_API krabs_ip_address* krabs_get_ip_addr_property_from_parser(
+        krabs_status_ctx *status,
+        krabs_event_parser *const parser,
+        krabs_property_name *const property_name
     );
 
     FLATKRABSETW_API void krabs_destroy_user_provider(

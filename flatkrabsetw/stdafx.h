@@ -10,3 +10,5 @@
 // Windows Header Files:
 #include <windows.h>
 #include <Evntcons.h>
+#include <stdbool.h>
+#include <stdint.h>

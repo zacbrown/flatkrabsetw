@@ -283,6 +283,15 @@ std::wstring skinny_to_wide(const std::string &str) {
     return std::wstring(&buffer[0], chars_converted);
 }
 
+// This has an allocation overhead for every time we get a string property.
+// It could be beneficial, especially in events where there are many string properties
+// to extract, to provide a pre-allocated buffer.
+//
+// One alternative would be to flesh out some `view_of` models for krabsetw,
+// similar to what's suggested in: https://github.com/Microsoft/krabsetw/issues/62
+//
+// For now, we'll live with the performance penalty in favor of a friendlier
+// API surface.
 FLATKRABSETW_API wchar_t* krabs_get_string_property_from_parser(
     krabs_status_ctx *status,
     krabs_event_parser *const parser,
@@ -335,6 +344,79 @@ FLATKRABSETW_API wchar_t* krabs_get_string_property_from_parser(
 
     return ret;
 }
+
+FLATKRABSETW_API uint32_t krabs_get_u32_property_from_parser(
+    krabs_status_ctx *status,
+    krabs_event_parser *const parser,
+    krabs_property_name *const property_name)
+{
+    ZeroMemory(status, sizeof krabs_status_ctx);
+
+    try {
+        krabs::parser *unwrapped_parser = (krabs::parser*)parser;
+        const std::wstring* unwrapped_property_name = (const std::wstring*)property_name;
+
+        return unwrapped_parser->parse<uint32_t>(*unwrapped_property_name);
+    }
+    catch (const std::exception& ex) {
+        strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
+        status->status = krabs_error_unknown_error;
+    }
+
+    return UINT32_MAX;
+}
+
+FLATKRABSETW_API uint16_t krabs_get_u16_property_from_parser(
+    krabs_status_ctx *status,
+    krabs_event_parser *const parser,
+    krabs_property_name *const property_name)
+{
+    ZeroMemory(status, sizeof krabs_status_ctx);
+
+    try {
+        krabs::parser *unwrapped_parser = (krabs::parser*)parser;
+        const std::wstring* unwrapped_property_name = (const std::wstring*)property_name;
+
+        return unwrapped_parser->parse<uint16_t>(*unwrapped_property_name);
+    }
+    catch (const std::exception& ex) {
+        strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
+        status->status = krabs_error_unknown_error;
+    }
+
+    return UINT16_MAX;
+}
+
+
+FLATKRABSETW_API krabs_ip_address* krabs_get_ip_addr_property_from_parser(
+    krabs_status_ctx *status,
+    krabs_event_parser *const parser,
+    krabs_property_name *const property_name)
+{
+    ZeroMemory(status, sizeof krabs_status_ctx);
+
+    krabs_ip_address *ret_ip = nullptr;
+
+    try {
+        krabs::parser *unwrapped_parser = (krabs::parser*)parser;
+        const std::wstring* unwrapped_property_name = (const std::wstring*)property_name;
+
+        auto parsed_ip = unwrapped_parser->parse<krabs::ip_address>(*unwrapped_property_name);
+        ret_ip = new krabs_ip_address;
+        throw_if_bad_alloc(ret_ip);
+
+        ret_ip->is_ipv6 = parsed_ip.is_ipv6;
+        ret_ip->v4 = parsed_ip.v4;
+        memcpy_s(&(ret_ip->v6[0]), 16, &(parsed_ip.v6[0]), 16);
+    }
+    catch (const std::exception& ex) {
+        strcpy_s(status->msg, ARRAYSIZE(status->msg), ex.what());
+        status->status = krabs_error_unknown_error;
+    }
+
+    return ret_ip;
+}
+
 #pragma endregion
 
 #pragma region DestroyFunctions
