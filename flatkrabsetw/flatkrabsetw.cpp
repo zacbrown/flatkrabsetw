@@ -187,7 +187,7 @@ FLATKRABSETW_API void krabs_add_event_filter_to_user_provider(
     }
 }
 
-FLATKRABSETW_API void krabs_start_trace(
+FLATKRABSETW_API void krabs_start_user_trace(
     krabs_status_ctx *status,
     krabs_user_trace *const trace)
 {
@@ -203,7 +203,7 @@ FLATKRABSETW_API void krabs_start_trace(
     }
 }
 
-FLATKRABSETW_API void krabs_stop_trace(
+FLATKRABSETW_API void krabs_stop_user_trace(
     krabs_status_ctx *status,
     krabs_user_trace *const trace)
 {

@@ -1,0 +1,1 @@
+bindgen flatkrabsetw\flatkrabsetw.h -o flatkrabsetw.rs --impl-debug=true --whitelist-function "krabs_.*" --whitelist-type "krabs_.*" --whitelist-var "krabs_.*"

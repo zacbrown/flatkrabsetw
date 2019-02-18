@@ -257,7 +257,7 @@ int main(void)
         return 1;
     }
 
-    krabs_start_trace(&status, trace);
+    krabs_start_user_trace(&status, trace);
 
     if (status.status != krabs_success)
     {

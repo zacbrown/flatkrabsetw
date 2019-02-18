@@ -107,12 +107,12 @@ extern "C" {
         krabs_filter *const filter
     );
 
-    FLATKRABSETW_API void krabs_start_trace(
+    FLATKRABSETW_API void krabs_start_user_trace(
         krabs_status_ctx *status,
         krabs_user_trace *const trace
     );
 
-    FLATKRABSETW_API void krabs_stop_trace(
+    FLATKRABSETW_API void krabs_stop_user_trace(
         krabs_status_ctx *status,
         krabs_user_trace *const trace
     );
